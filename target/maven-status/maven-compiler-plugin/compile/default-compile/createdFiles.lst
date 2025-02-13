@@ -1,0 +1,8 @@
+com\tzuchaedahy\entities\Client.class
+com\tzuchaedahy\entities\Employee.class
+com\tzuchaedahy\entities\OrderProduct.class
+com\tzuchaedahy\Main.class
+com\tzuchaedahy\repository\ProductDao.class
+com\tzuchaedahy\entities\Product.class
+com\tzuchaedahy\entities\Order.class
+com\tzuchaedahy\db\DbConnection.class

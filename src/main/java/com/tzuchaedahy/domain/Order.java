@@ -45,4 +45,11 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
+    @Override
+    public String toString() {
+        return "ID do Pedido: " + id + "\n" +
+                "CPF do Cliente: " + clientCpf + "\n" +
+                "CPF do Funcionário: " + employeeCpf + "\n" +
+                "Preço Total: " + totalPrice;
+    }
 }

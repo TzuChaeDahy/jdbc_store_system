@@ -1,10 +1,14 @@
 package com.tzuchaedahy.application;
 
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.tzuchaedahy.domain.Client;
 import com.tzuchaedahy.domain.Product;
 import com.tzuchaedahy.service.ClientService;
+import com.tzuchaedahy.service.OrderService;
 import com.tzuchaedahy.service.ProductService;
 import com.tzuchaedahy.utils.Utils;
 
@@ -12,6 +16,7 @@ public class Application {
     private static Scanner scanner = new Scanner(System.in);
     private static ProductService productService = new ProductService();
     private static ClientService clientService = new ClientService();
+    private static OrderService orderService = new OrderService();
 
     public static void run() {
         Boolean isRunning = true;
@@ -55,19 +60,19 @@ public class Application {
                 registerClient();
                 break;
             case 3:
-                System.out.println("Buscar produto");
+                searchProduct();
                 break;
             case 4:
-                System.out.println("Listar os produtos disponiveis");
+                listAllAvailableProducts();
                 break;
             case 5:
-                System.out.println("Efetuar venda");
+                processSell();
                 break;
             case 6:
-                System.out.println("Listar vendas realizadas");
+                listAllSells();
                 break;
             case 0:
-                System.out.println("Saindo...");
+                Utils.displayMessage("Saindo...");
                 return false;
             default:
                 System.out.println("Opçao inválida!");
@@ -134,6 +139,117 @@ public class Application {
         } catch (RuntimeException e) {
             Utils.displayMessage(e.getMessage());
         }
+    }
+
+    private static void searchProduct() {
+        Utils.clearScreen();
+
+        System.out.println("---------- Busca de Produto por ID ----------\n");
+
+        Utils.clearBuffer(scanner);
+
+        Integer id = null;
+        Boolean hasId = false;
+
+        while (!hasId) {
+            try {
+                System.out.print("Digite o ID do produto: ");
+                id = scanner.nextInt();
+                hasId = !hasId;
+            } catch (InputMismatchException e) {
+                Utils.displayMessage("ID inválido!");
+            } finally {
+                Utils.clearBuffer(scanner);
+            }
+        }
+
+        Product product = productService.searchProductById(id);
+
+        if (product == null) {
+            Utils.displayMessage("Produto não encontrado!");
+        } else {
+            System.out.println(product);
+
+            System.out.println("Para sair, aperte qualquer tecla e pressione Enter...");
+            scanner.nextLine();
+        }
+    }
+
+    private static void listAllAvailableProducts() {
+        Utils.clearScreen();
+
+        System.out.println("---------- Lista de Produtos Disponíveis ----------\n");
+
+        Utils.clearBuffer(scanner);
+
+        productService.listAllAvailableProducts().forEach(product -> {
+            System.out.println(product.toString());
+            System.out.println();
+        });
+
+        System.out.println("Para sair, aperte qualquer tecla e pressione Enter...");
+        scanner.nextLine();
+    }
+
+    private static void processSell() {
+        Utils.clearScreen();
+
+        System.out.println("---------- Efetuar Venda ----------\n");
+
+        Utils.clearBuffer(scanner);
+
+        System.out.print("Digite o CPF do cliente: ");
+        String clientCpf = scanner.nextLine();
+
+        System.out.print("Digite o CPF do funcionário: ");
+        String employeeCpf = scanner.nextLine();
+
+        Map<Integer, Integer> sellProducts = new HashMap<>();
+
+        Boolean hasAnotherProduct = true;
+        while (hasAnotherProduct) {
+            System.out.print("Digite o ID do produto: ");
+            Integer productId = scanner.nextInt();
+    
+            System.out.print("Digite a quantidade do produto: ");
+            Integer quantity = scanner.nextInt();
+
+            sellProducts.put(productId, quantity);
+
+            System.out.println("Deseja adicionar outro produto? (S/N)");
+            String answer = scanner.next();
+
+            if (!answer.equalsIgnoreCase("S")) {
+                hasAnotherProduct = false;
+            }
+        }
+
+        try {
+            orderService.processSell(clientCpf, employeeCpf, sellProducts);
+
+            Utils.displayMessage("Venda realizada com sucesso!");
+        } catch (RuntimeException e) {
+            Utils.displayMessage(e.getMessage());
+        }
+    }
+
+    private static void listAllSells() {
+        Utils.clearScreen();
+
+        System.out.println("---------- Lista de Vendas Realizadas ----------\n");
+
+        Utils.clearBuffer(scanner);
+
+        orderService.getAllOrders().forEach(order -> {
+            System.out.println(order.toString());
+            System.out.println("Produtos comprados: ");
+            orderService.getAllOrderProducts(order.getId()).forEach(orderProduct -> {
+                System.out.println(orderProduct.toString());
+            });
+        });
+
+        System.out.println("Para sair, aperte qualquer tecla e pressione Enter...");
+        scanner.nextLine();
     }
 
 }

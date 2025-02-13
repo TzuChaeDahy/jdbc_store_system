@@ -13,7 +13,6 @@ import com.tzuchaedahy.domain.Product;
 public class ProductDao {
     public void save(Product product) {
         try {
-
             String query = "INSERT INTO PRODUTO (NOME, VALOR_UNIT, QUANTIDADE) VALUES (?, ?, ?);";
             Connection conn = DbConnection.getConnection();
 
@@ -63,5 +62,62 @@ public class ProductDao {
         }
 
         return products;
+    }
+
+    public Product findById(int id) {
+        Product product = null;
+
+        try {
+            String query = "SELECT * FROM PRODUTO WHERE ID = ?;";
+            Connection conn = DbConnection.getConnection();
+            
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, id);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                product = new Product(
+                    result.getInt("ID"),
+                    result.getString("NOME"),
+                    result.getDouble("VALOR_UNIT"),
+                    result.getInt("QUANTIDADE")
+                );
+            }
+
+            statement.close();
+            conn.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return product;
+    }
+
+    public Double findPriceById(int id) {
+        Double price = null;
+
+        try {
+            String query = "SELECT VALOR_UNIT FROM PRODUTO WHERE ID = ?;";
+            Connection conn = DbConnection.getConnection();
+            
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, id);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                price = result.getDouble("VALOR_UNIT");
+            }
+
+            statement.close();
+            conn.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return price;
     }
 }

@@ -55,4 +55,10 @@ public class OrderProduct {
         this.price = price;
     }
 
+    @Override
+    public String toString() {
+        return "ID do Produto: " + id + "\n" +
+                "Quantidade: " + quantity + "\n" +
+                "Preço: " + price + "\n";
+    }
 }

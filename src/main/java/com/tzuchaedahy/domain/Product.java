@@ -57,4 +57,11 @@ public class Product {
         this.quantity = quantity;
     }
 
+    @Override
+    public String toString() {
+        return "ID do Produto: " + id + "\n" +
+               "Nome: " + name + "\n" +
+               "Preço Unitário: " + unitPrice + "\n" +
+               "Quantidade: " + quantity;
+    }
 }
